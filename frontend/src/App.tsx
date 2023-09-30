@@ -47,20 +47,25 @@ function App() {
 
     return (
         <div>
-            <h1>Jerry</h1>
-            <p>
-                <small>An AI by Evan Chisholm</small>
-            </p>
-            <Messages
-                messages={
-                    isGenerating
-                        ? [
-                              ...messages,
-                              { role: "jerry", content: incomingMessage },
-                          ]
-                        : messages
-                }
-            />
+            <div className="m-5 ml-10">
+                <h1 className="text-3xl font-bold">jerry</h1>
+                <p>
+                    <small>An AI by Evan Chisholm</small>
+                </p>
+            </div>
+            <hr />
+            <div className="mb-20">
+                <Messages
+                    messages={
+                        isGenerating
+                            ? [
+                                  ...messages,
+                                  { role: "jerry", content: incomingMessage },
+                              ]
+                            : messages
+                    }
+                />
+            </div>
             <MessageInput
                 handleMessage={(m) => {
                     socket.send(m);

@@ -16,13 +16,23 @@ const MessageInput: FC<Props> = ({ handleMessage }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form
+            className="fixed bottom-0 flex w-full gap-5 p-5"
+            onSubmit={handleSubmit}
+        >
             <input
+                className="grow ring-none outline-none border-none rounded ring-2 ring-gray-200 focus:ring-2 focus:ring-blue-500 p-5"
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
+                placeholder="Your Message"
             />
-            <button type="submit">send</button>
+            <button
+                className="bg-blue-500 text-white rounded-md p-2 px-6 font-semibold"
+                type="submit"
+            >
+                send
+            </button>
         </form>
     );
 };

@@ -7,10 +7,17 @@ interface Props {
 
 const Messages: FC<Props> = ({ messages }) => {
     return (
-        <ul>
+        <ul className="px-5">
             {messages.map((m, i) => (
-                <li key={i}>
-                    {m.role === "user" ? "you:" : "jerry:"}{" "}
+                <li
+                    className={`p-5 flex flex-col gap-3 ${
+                        m.role === "user" ? "" : "bg-slate-100"
+                    }`}
+                    key={i}
+                >
+                    <p className="font-bold">
+                        {m.role === "user" ? "you:" : "jerry:"}
+                    </p>
                     {m.content.split("\n").map((t, j) => (
                         <p key={j}>{t}</p>
                     ))}
