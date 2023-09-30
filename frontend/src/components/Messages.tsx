@@ -6,12 +6,14 @@ interface Props {
 }
 
 const Messages: FC<Props> = ({ messages }) => {
-    // const messages: Message[] = [{ role: "user", content: "hello world" }];
     return (
         <ul>
             {messages.map((m, i) => (
                 <li key={i}>
-                    {m.role === "user" ? "you:" : "jerry:"} {m.content}
+                    {m.role === "user" ? "you:" : "jerry:"}{" "}
+                    {m.content.split("\n").map((t, j) => (
+                        <p key={j}>{t}</p>
+                    ))}
                 </li>
             ))}
         </ul>

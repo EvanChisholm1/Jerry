@@ -48,6 +48,9 @@ function App() {
     return (
         <div>
             <h1>Jerry</h1>
+            <p>
+                <small>An AI by Evan Chisholm</small>
+            </p>
             <Messages
                 messages={
                     isGenerating
