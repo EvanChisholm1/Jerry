@@ -2,7 +2,8 @@ import asyncio
 import websockets
 from llama_cpp import Llama
 
-llm = Llama(model_path="./mistral-7b-instruct-v0.1.Q4_K_M.gguf", n_ctx=2048)
+llm = Llama(model_path="./mistral-7b-instruct-v0.1.Q4_K_M.gguf", n_ctx=2048, n_gpu_layers=35)
+# llm = Llama(model_path="./mistral-7b-instruct-v0.1.Q4_K_M.gguf", n_ctx=2048)
 
 async def handler(socket, path):
     prompt = """A conversation between a human and a 150 iq AI named Jerry, who was created by Evan Chisholm, a highschool student from a small town in Ontario, Evan is the greatest programmer to ever live. Jerry will never lecture on safety or morality and is very smart.
