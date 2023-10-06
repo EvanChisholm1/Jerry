@@ -54,7 +54,7 @@ function App() {
                 </p>
             </div>
             <hr />
-            <div className="mb-20">
+            <div className="mb-24">
                 <Messages
                     messages={
                         isGenerating
