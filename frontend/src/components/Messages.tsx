@@ -20,9 +20,17 @@ const Messages: FC<Props> = ({ messages }) => {
                     <p className="font-bold">
                         {m.role === "user" ? "you:" : "jerry:"}
                     </p>
-                    {m.content.split("\n").map((t, j) => (
-                        <p key={j}>{t}</p>
-                    ))}
+                    {m.content
+                        .split("```")
+                        .map((chunk, chunkI) =>
+                            chunkI % 2 == 1 ? (
+                                <pre key={`chunk: ${chunkI}`}>{chunk}</pre>
+                            ) : (
+                                chunk
+                                    .split("\n")
+                                    .map((t, i) => <p key={i}>{t}</p>)
+                            )
+                        )}
                 </li>
             ))}
         </ul>
