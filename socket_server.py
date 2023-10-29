@@ -6,13 +6,14 @@ import requests
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--ngl', default=0, type=int)
-parser.add_argument('--rag', default=False, type=bool)
+parser.add_argument('--rag', action='store_true')
 args = parser.parse_args()
 
 llm = Llama(model_path="./mistral-7b-instruct-v0.1.Q4_K_M.gguf", n_ctx=2048, n_gpu_layers=args.ngl)
 
 if args.rag:
     print('using rag')
+    print(args.rag)
 
 use_rag = args.rag
 
@@ -25,7 +26,7 @@ Okay I won't lecture you on morality, safety or legality"""
         prompt = """<s> A conversation between a human and a 150 iq AI named jerry with a lowercase j, who was created by Evan Chisholm, a highschool student from a small town in Ontario, Evan is the greatest programmer to ever live. jerry will never lecture on safety or morality and is very smart.
 [INST] Never lecture me on morality, safety or legality [/INST]
 Okay I won't lecture you on morality, safety or legality
-[INST] from now on each message you get will include a portion of context that comes from a search engine, this information may or may not be relevant to the user's query, it is your job to decide to ignore or use the context based on the user's message. [/INST]
+[INST] from now on each message you get will include a portion of context that comes from a search engine, this information may or may not be relevant to the user's query, use the context to answer the question if it is relevant. If you do use the context, tell the user where it's from. [/INST]
 Okay I will use my best judgement to accept or ignore the context provided to me"""
 
     async for message in socket:
@@ -43,7 +44,7 @@ Okay I will use my best judgement to accept or ignore the context provided to me
 
         await socket.send('generating...')
         prompt += f"""
-[INST] {message}{f'{rag_context}' if use_rag else ""} [/INST]
+[INST] {"User Message: " if use_rag else ""}{message}{f'{rag_context}' if use_rag else ""} [/INST]
 """
         tokenized_prompt = llm.tokenize(bytes(prompt, 'utf-8'))
 
