@@ -23,8 +23,6 @@ Okay I won't lecture you on morality, safety or legality"""
 """
         tokenized_prompt = llm.tokenize(bytes(prompt, 'utf-8'))
 
-        # print("JERRY: ", end='')
-
         response = ""
         for token in llm.generate(tokenized_prompt):
             out_token = llm.detokenize([token]).decode('utf-8')
