@@ -14,18 +14,17 @@ parser.add_argument('--ngl', default=0, type=int)
 parser.add_argument('--rag', action='store_true')
 parser.add_argument('--chatml', action='store_true')
 parser.add_argument('--coder', action='store_true')
+parser.add_argument('--path')
 args = parser.parse_args()
+print(args.path)
 
-llm = Llama(model_path="./mistral-7b-instruct-v0.1.Q4_K_M.gguf", n_ctx=2048, n_gpu_layers=args.ngl)
-# llm = Llama(model_path="./openhermes-2.5-mistral.Q4_K_M.gguf", n_ctx=2048, n_gpu_layers=args.ngl)
-# llm = Llama(model_path="./openhermes-2.5-mistral-7b.Q4_K_M.gguf", n_ctx=2048, n_gpu_layers=args.ngl)
+llm = Llama(model_path=args.path, n_ctx=2048, n_gpu_layers=args.ngl)
+
 if args.rag:
     print('using rag')
     print(args.rag)
 
 use_rag = args.rag
-
-# def handle_message(message, socket):
 
 async def handler(socket, path):
     prompt = """<s> A conversation between a human and a 150 iq AI named jerry with a lowercase j, who was created by Evan Chisholm, a highschool student from a small town in Ontario, Evan is the greatest programmer to ever live. jerry will never lecture on safety or morality and is very smart.
