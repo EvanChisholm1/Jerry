@@ -6,6 +6,7 @@ interface Props {
 }
 
 const Messages: FC<Props> = ({ messages }) => {
+    console.log(messages);
     return (
         <ul className="px-5">
             {messages.map((m, i) => (

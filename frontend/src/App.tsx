@@ -11,25 +11,6 @@ function App() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [incomingMessage, setIncomingMessage] = useState("");
 
-    function handleIncomingMessage(e: MessageEvent) {
-        console.log(e);
-        const m = e.data;
-        if (m === "generating...") {
-            setIsGenerating(true);
-            setIncomingMessage("");
-        } else if (m === "END OF SEQUENCE") {
-            setMessages([
-                ...messages,
-                { content: incomingMessage, role: "jerry" },
-            ]);
-            setIsGenerating(false);
-            setIncomingMessage("");
-        } else {
-            console.log(e.data);
-            setIncomingMessage(`${incomingMessage}${m}`);
-        }
-    }
-
     useEffect(() => {
         console.log("bro");
         socket.addEventListener("open", () => {
@@ -38,6 +19,30 @@ function App() {
     }, []);
 
     useEffect(() => {
+        if (isGenerating === false && incomingMessage !== "") {
+            setMessages([
+                ...messages,
+                { content: incomingMessage, role: "jerry" },
+            ]);
+            setIncomingMessage("");
+        }
+    }, [isGenerating, incomingMessage, messages]);
+
+    useEffect(() => {
+        function handleIncomingMessage(e: MessageEvent) {
+            console.log(e);
+            const m = e.data;
+            if (m === "generating...") {
+                setIsGenerating(true);
+                setIncomingMessage("");
+            } else if (m === "END OF SEQUENCE") {
+                console.log(incomingMessage);
+                setIsGenerating(false);
+            } else {
+                console.log(e.data);
+                setIncomingMessage(`${incomingMessage}${m}`);
+            }
+        }
         socket.addEventListener("message", handleIncomingMessage);
 
         return () => {
