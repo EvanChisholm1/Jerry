@@ -45,21 +45,26 @@ Okay I will use my best judgement to accept or ignore the context provided to me
 
     async for message in socket:
         print('incoming message:', message)
+        await socket.send('generating...')
 
         if is_python_block and args.coder:
             if message == 'y':
+                print(python_block)
                 usr_stdout = StringIO()
-                with redirect_stdout(usr_stdout): exec(python_block)
+                with redirect_stdout(usr_stdout): exec(python_block, {}, {})
                 result = usr_stdout.getvalue()
                 # await socket.send('generating...')
                 # await socket.send(result)
                 # await socket.send('END OF SEQUENCE')
                 print("python out: ", result)
-                prompt += f"<|im_start|> python output: {result} <|im_end|> \n<|im_start|> assistant"
+                await socket.send(f'```output\n{result}\n```')
+                prompt += f"\n```output\n{result}\n```"
             else:
                 print("code not run")
-                prompt += f"<|im_start|> python output: code not run <|im_end|> \n<|im_start|> assistant"
+                prompt += f"\npython output: code not run"
+                await socket.send(f"\noutput: code not run")
 
+            python_block = ""
             is_python_block = False
         else:
             rag_context = ""
@@ -83,7 +88,6 @@ Okay I will use my best judgement to accept or ignore the context provided to me
 <|im_start|> assistant
 """
 
-        await socket.send('generating...')
         tokenized_prompt = llm.tokenize(bytes(prompt, 'utf-8'))
 
         response = ""
@@ -105,6 +109,8 @@ Okay I will use my best judgement to accept or ignore the context provided to me
             if response.endswith("<|im_end|>") and args.chatml:
                 break
 
+            print('generating..', out_token)
+
             # print("tok:", out_token)
             await socket.send(out_token)
             if out_token == '':
@@ -115,7 +121,7 @@ Okay I will use my best judgement to accept or ignore the context provided to me
             response += out_token
 
         prompt += response
-        if args.chatml: prompt += " <|im_end|>"
+        if args.chatml and not is_python_block: prompt += " <|im_end|>"
         await socket.send('END OF SEQUENCE')
         # print("### current prompt ###")
         # print(prompt)
