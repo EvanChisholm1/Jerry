@@ -22,14 +22,19 @@ const Messages: FC<Props> = ({ messages }) => {
                         {m.role === "user" ? "you:" : "jerry:"}
                     </p>
                     {m.content
+                        .trim() // trim the string because for some reason open hermes is generating 2 new line characters
                         .split("```")
                         .map((chunk, chunkI) =>
                             chunkI % 2 == 1 ? (
-                                <pre key={`chunk: ${chunkI}`}>{chunk}</pre>
+                                <pre key={`chunk: ${chunkI}`}>
+                                    {chunk.trim()}
+                                </pre>
                             ) : (
                                 chunk
                                     .split("\n")
-                                    .map((t, i) => <p key={i}>{t}</p>)
+                                    .map((t, i) =>
+                                        t !== "" ? <p key={i}>{t}</p> : ""
+                                    )
                             )
                         )}
                 </li>

@@ -47,15 +47,10 @@ class Conversation:
             prompt = join([
                 "<|im_start|> system",
                 """You are Jerry. Jerry is a useful assistant who can write Python code to answer questions when it is needed. When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user <|im_end|>""",
-                # "<|im_start|> user",
-                # "hello jerry! <|im_end|>",
-                # "<|im_start|> assistant",
-                # "Hello, how can I assist you today? <|im_end|>"
             ])
 
             self.add_user_message('hello jerr!')
             self.add_assistant_message('Hi there! How can I help you today?')
-
 
         return prompt
 
@@ -65,11 +60,14 @@ class Conversation:
         return encoded
 
     def encode_llama_message(self, message):
-        text = message['content']
+        text = ""
         if message['role'] == 'user':
-            text = f"[INST] {message['content']} [/INST]"
+            text = f"[INST] {message['content']} [/INST]\n"
+        else:
+            text = f"{message['content']}\n"
 
-        encoded = self.llm.tokenize(bytes(text, 'utf-8'), add_bos=False)
+        encoded = self.llm.tokenize(bytes(text, 'utf-8'), add_bos=False)[:-1]
+        print(encoded)
         return encoded
     
     def encode_message(self, message, chatml=False):
@@ -93,7 +91,6 @@ class Conversation:
             'content': message
         })
 
-    
     def tokenize_conversation(self):
         encoded_sys = self.llm.tokenize(bytes(self.sys_prompt, 'utf-8'))
         encoded_prompt = encoded_sys
@@ -104,15 +101,13 @@ class Conversation:
     
     def generate_chat_completion(self, add_assistant_prefix=True):
         tokenized_prompt = self.tokenize_conversation()
-        if add_assistant_prefix:
+        if add_assistant_prefix and self.chatml:
             tokenized_prompt += [32001] + self.llm.tokenize(bytes(" assistant", 'utf-8'), add_bos=False)
 
         is_in_python_block = False
         python_block = ""
         response = ""
         for token in self.llm.generate(tokenized_prompt):
-            # print(token)
-
             out_token = self.llm.detokenize([token]).decode('utf-8')
 
             if is_in_python_block and response.endswith('```') and self.coder:
