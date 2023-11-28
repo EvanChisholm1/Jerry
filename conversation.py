@@ -6,6 +6,12 @@ from io import StringIO
 def join(segments):
     return "\n".join(segments)
 
+def run_code(code_block):
+    usr_stdout = StringIO()
+    with redirect_stdout(usr_stdout): exec(code_block, {}, {})
+    
+    return usr_stdout.getvalue()
+
 class Conversation:
     def __init__(self, llm, rag=False, coder=False):
         self.llm = llm
@@ -67,6 +73,7 @@ class Conversation:
         return encoded
     
     def encode_message(self, message, chatml=False):
+        # TODO: add rag message encoding with a user message: and context: field
         if chatml:
             return self.encode_chatml_message(message)
         else:
@@ -74,6 +81,7 @@ class Conversation:
         
     
     def add_user_message(self, message):
+        # TODO: add rag context fetching and request
         self.messages.append({
             'role': 'user',
             'content': message
@@ -94,9 +102,10 @@ class Conversation:
         
         return encoded_prompt
     
-    def generate_chat_completion(self):
+    def generate_chat_completion(self, add_assistant_prefix=True):
         tokenized_prompt = self.tokenize_conversation()
-        tokenized_prompt += [32001] + self.llm.tokenize(bytes(" assistant", 'utf-8'), add_bos=False)
+        if add_assistant_prefix:
+            tokenized_prompt += [32001] + self.llm.tokenize(bytes(" assistant", 'utf-8'), add_bos=False)
 
         is_in_python_block = False
         python_block = ""
@@ -129,34 +138,43 @@ class Conversation:
         
         self.add_assistant_message(response)
     
-    def run_code_block(self):
+    def accept_code_block(self):
         print('running')
 
-        usr_stdout = StringIO()
-        with redirect_stdout(usr_stdout): exec(self.code_block, {}, {})
-        result = usr_stdout.getvalue()
-
+        result = run_code(self.code_block)
         print("output:", result)
 
         self.code_block = ""
         self.code_block_available = False
-        self.messages[-1]['content'] += "\n```output\n{result}\n```"
+        self.messages[-1]['content'] += f"\n```output\n{result}\n```"
 
         return result
+    
+    def reject_code_block(self):
+        self.code_block = ""
+        self.code_block_available = False
+        self.messages[-1]['content'] += f"\n```output\ncode not run\n```"
         
-llm = Llama(model_path='./openhermes-2.5-mistral-7b.Q4_K_M.gguf', n_ctx=2048, n_gpu_layers=35)
-c = Conversation(llm, coder=True)
 
-while True:
-    if c.code_block_available:
-        confirmation = input('there is a code block available to run, run it? y/n ')
-        if confirmation == 'y':
-            c.run_code_block()
-        continue
+if __name__ == "__main__":
+    llm = Llama(model_path='./openhermes-2.5-mistral-7b.Q4_K_M.gguf', n_ctx=2048, n_gpu_layers=35)
+    c = Conversation(llm, coder=True)
 
-    user_message = input('you: ')
-    c.add_user_message(user_message)
-    for tok in c.generate_chat_completion():
-        print(tok, end='')
-        
-    print()
+    while True:
+        add_assistant_prefix = True
+        if c.code_block_available:
+            add_assistant_prefix = False
+            confirmation = input('there is a code block available to run, run it? y/n ')
+            if confirmation == 'y':
+                c.accept_code_block()
+            else:
+                c.reject_code_block()
+            # continue
+        else:
+            user_message = input('you: ')
+            c.add_user_message(user_message)
+
+        for tok in c.generate_chat_completion(add_assistant_prefix=add_assistant_prefix):
+            print(tok, end='')
+            
+        print()
