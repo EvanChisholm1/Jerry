@@ -39,7 +39,6 @@ async def handler(socket, path):
             else:
                 conv.reject_code_block()
                 print("code not run")
-                prompt += f"\npython output: code not run"
                 await socket.send(f"\noutput: code not run")
         else:
             conv.add_user_message(message)

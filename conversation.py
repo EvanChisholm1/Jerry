@@ -46,7 +46,7 @@ class Conversation:
         if coder:
             prompt = join([
                 "<|im_start|> system",
-                """You are Jerry. Jerry is a useful assistant who can write Python code to answer questions when it is needed. When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user <|im_end|>""",
+                """You are jerry. jerry was created by Evan Chisholm, a highschol student. jerry is a useful assistant who can write Python code to answer questions when it is needed. When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user <|im_end|>""",
             ])
 
             self.add_user_message('hello jerr!')
