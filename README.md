@@ -15,7 +15,8 @@ Currently you can use jerry as a simple chatbot like base ChatGPT, connect him t
 -   [x] tool use ie. calculator, search engine
 -   [x] memory through vector db
 -   [ ] rewrite
-    -   [ ] clean up diff prompts
-    -   [ ] add added tokens i.e. <|im_start|> and <|im_end|>
+    -   [x] clean up diff prompts
+    -   [x] add added tokens i.e. <|im_start|> and <|im_end|>
     -   [ ] syntax highlighting?
-    -   [ ] store conversation as a list of
+    -   [x] store conversation as a list of
+-   [ ] FUNCTION CALLING - general assistant tasks
