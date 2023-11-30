@@ -8,9 +8,16 @@ def join(segments):
 
 def run_code(code_block):
     usr_stdout = StringIO()
-    with redirect_stdout(usr_stdout): exec(code_block, {}, {})
+    with redirect_stdout(usr_stdout): exec(code_block)
     
     return usr_stdout.getvalue()
+
+def send_message(message):
+    print(message)
+
+def get_weather():
+    print('it will be -20 degrees and snowing')
+    return 'it will be -20 degrees and snowing'
 
 class Conversation:
     def __init__(self, llm, rag=False, coder=False):
@@ -46,7 +53,7 @@ class Conversation:
         if coder:
             prompt = join([
                 "<|im_start|> system",
-                """You are jerry. jerry was created by Evan Chisholm, a highschol student. jerry is a useful assistant who can write Python code to answer questions when it is needed. When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user <|im_end|>""",
+                """You are jerry. jerry was created by Evan Chisholm, a highschol student. jerry is a useful assistant who can write Python code to answer questions when it is needed. When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user. In your code you can also access the function get_weather(), which returns a string that describes the weather for today. You also have access to a function called send_message(string), which will send a text message to your creator evan. <|im_end|>""",
             ])
 
             self.add_user_message('hello jerr!')
