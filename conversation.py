@@ -1,6 +1,10 @@
 from llama_cpp import Llama
 from contextlib import redirect_stdout
 from io import StringIO
+import requests
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # join function used so I don't have to do multiline strings that aren't properly indented
 def join(segments):
@@ -12,12 +16,31 @@ def run_code(code_block):
     
     return usr_stdout.getvalue()
 
+# AGENT FUNCTIONS
+# TODO: make a real send_message function that sends a message to a phone number or contact
 def send_message(message):
     print(message)
 
+api_key = os.getenv('WEATHER_API_KEY')
+# TODO: get the lat and lon from the web interface
+lat = float(os.getenv('LAT'))
+lon = float(os.getenv('LON'))
+print(lat, lon)
+
 def get_weather():
-    print('it will be -20 degrees and snowing')
-    return 'it will be -20 degrees and snowing'
+    base_url = 'http://api.openweathermap.org/data/2.5/weather'
+    params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'metric'}
+
+    response = requests.get(base_url, params=params)
+
+    if response.status_code == 200:
+        weather_data = response.json()
+        print(weather_data)
+        return weather_data
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+        return None
+# END AGENT FUNCTIONS
 
 class Conversation:
     def __init__(self, llm, rag=False, coder=False):
@@ -138,7 +161,7 @@ class Conversation:
                 is_in_python_block = True
             
         
-        self.add_assistant_message(response)
+        if add_assistant_prefix: self.add_assistant_message(response)
     
     def accept_code_block(self):
         print('running')

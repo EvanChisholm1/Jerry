@@ -4,7 +4,7 @@ jerry is my personal ai assistant. I use this repo to play around with various i
 
 Currently jerry uses the mistral 7b instruct model because it is open, high quality and not too big to run on a laptop or similar low powered computer. The "coder" verion of jerry runs best with openhermes-2.5.
 
-Currently you can use jerry as a simple chatbot like base ChatGPT, connect him to my personal semantic search engine Sailor for RAG or use the --coder flag to give him access to a python code interpreter.
+You can use jerry as a simple chatbot like base ChatGPT, connect him to my personal semantic search engine Sailor for RAG or use the --coder flag to give him access to a python code interpreter.
 
 ## TODO:
 
@@ -20,3 +20,4 @@ Currently you can use jerry as a simple chatbot like base ChatGPT, connect him t
     -   [ ] syntax highlighting?
     -   [x] store conversation as a list of
 -   [ ] FUNCTION CALLING - general assistant tasks
+-   [ ] Voice chat, similar to ChatGPT voice? obv whisper for speech to text, need to find good tts model
