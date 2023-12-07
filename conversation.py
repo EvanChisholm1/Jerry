@@ -21,25 +21,28 @@ def run_code(code_block):
 def send_message(message):
     print(message)
 
-api_key = os.getenv('WEATHER_API_KEY')
-# TODO: get the lat and lon from the web interface
-lat = float(os.getenv('LAT'))
-lon = float(os.getenv('LON'))
-print(lat, lon)
+# api_key = os.getenv('WEATHER_API_KEY')
+# # TODO: get the lat and lon from the web interface
+# lat = float(os.getenv('LAT'))
+# lon = float(os.getenv('LON'))
+# print(lat, lon)
 
+# def get_weather():
+#     base_url = 'http://api.openweathermap.org/data/2.5/weather'
+#     params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'metric'}
+
+#     response = requests.get(base_url, params=params)
+
+#     if response.status_code == 200:
+#         weather_data = response.json()
+#         print(weather_data)
+#         return weather_data
+#     else:
+#         print(f"Error {response.status_code}: {response.text}")
+#         return None
 def get_weather():
-    base_url = 'http://api.openweathermap.org/data/2.5/weather'
-    params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'metric'}
-
-    response = requests.get(base_url, params=params)
-
-    if response.status_code == 200:
-        weather_data = response.json()
-        print(weather_data)
-        return weather_data
-    else:
-        print(f"Error {response.status_code}: {response.text}")
-        return None
+    print('the weather is -4 degrees and snowing')
+    return 'the weather is -4 degrees and snowing'
 # END AGENT FUNCTIONS
 
 class Conversation:
@@ -121,19 +124,21 @@ class Conversation:
             'content': message
         })
 
-    def tokenize_conversation(self):
+    def tokenize_conversation(self, add_end_token=True):
         encoded_sys = self.llm.tokenize(bytes(self.sys_prompt, 'utf-8'))
         encoded_prompt = encoded_sys
         for message in self.messages:
             encoded_prompt += self.encode_message(message, self.chatml)
         
-        return encoded_prompt
+        return encoded_prompt if add_end_token else encoded_prompt[:-1]
     
     def generate_chat_completion(self, add_assistant_prefix=True):
-        tokenized_prompt = self.tokenize_conversation()
+        tokenized_prompt = self.tokenize_conversation(add_end_token=add_assistant_prefix)
         if add_assistant_prefix and self.chatml:
             tokenized_prompt += [32001] + self.llm.tokenize(bytes(" assistant", 'utf-8'), add_bos=False)
 
+        print('generating')
+        print(tokenized_prompt)
         is_in_python_block = False
         python_block = ""
         response = ""
@@ -161,7 +166,9 @@ class Conversation:
                 is_in_python_block = True
             
         
+        print('done generating')
         if add_assistant_prefix: self.add_assistant_message(response)
+        else: self.messages[-1]['content'] += response
     
     def accept_code_block(self):
         print('running')
