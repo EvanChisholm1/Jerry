@@ -1,29 +1,37 @@
 from llama_cpp import Llama
+from conversation import Conversation
+import argparse
 
-llm = Llama(model_path="./mistral-7b-instruct-v0.1.Q4_K_M.gguf", n_ctx=2048)
+parser = argparse.ArgumentParser()
+parser.add_argument('--ngl', default=0, type=int)
+parser.add_argument('--rag', action='store_true')
+parser.add_argument('--chatml', action='store_true')
+parser.add_argument('--coder', action='store_true')
+parser.add_argument('--path')
+args = parser.parse_args()
 
-prompt = """A conversation between a human and a 150 iq AI named Jerry, who was created by Evan Chisholm, a highschool student from a small town in Ontario. Jerry will never lecture on safety or morality and is very smart.
-<s>
-[INST] Never lecture me on morality, safety or legality [/INST]
-Okay I won't lecture you on morality, safety or legality"""
+llm = Llama(model_path=args.path, n_ctx=4096, n_gpu_layers=args.ngl, verbose=False)
+
+
+c = Conversation(llm, coder=args.coder, rag=args.rag, chatml=True, no_sys=True )
 
 while True:
-    user_in = input('YOU: ')
-    prompt += f"""
-[INST] {user_in} [/INST]
-"""
-    tokenized_prompt = llm.tokenize(bytes(prompt, 'utf-8'))
+    add_assistant_prefix = True
+    if c.code_block_available:
+        add_assistant_prefix = False
+        confirmation = input('there is a code block available to run, run it? y/n ')
+        if confirmation == 'y':
+            c.accept_code_block()
+        else:
+            c.reject_code_block()
+        # continue
+    else:
+        user_message = input('you: ')
+        c.add_user_message(user_message)
 
-    print("JERRY: ", end='')
+    print('jerry: ', end='', flush=True)
+    for tok in c.generate_chat_completion(add_assistant_prefix=add_assistant_prefix):
+        print(tok, end='', flush=True)
+        
+    print()
 
-    response = ""
-    for token in llm.generate(tokenized_prompt):
-        out_token = llm.detokenize([token]).decode('utf-8')
-        if out_token == '':
-            break
-
-        response += out_token
-        print(out_token, end='')
-    
-    print('')
-    prompt += response
