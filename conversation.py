@@ -4,6 +4,7 @@ from io import StringIO
 import requests
 import os
 from dotenv import load_dotenv
+import requests
 load_dotenv()
 
 # join function used so I don't have to do multiline strings that aren't properly indented
@@ -115,10 +116,19 @@ class Conversation:
     
     def add_user_message(self, message):
         # TODO: add rag context fetching and request
+        query = message
+        if self.rag:
+            message = f"User Message: {message}"
+
         self.messages.append({
             'role': 'user',
             'content': message
         })
+
+        if self.rag:
+            self.fetch_rag_ctx(query)
+
+        print(self.messages[-1])
     
     def add_assistant_message(self, message):
         self.messages.append({
@@ -188,6 +198,14 @@ class Conversation:
         self.code_block = ""
         self.code_block_available = False
         self.messages[-1]['content'] += f"\n```output\ncode not run\n```"
+    
+    def fetch_rag_ctx(self, query):
+        response = requests.get(f'http://localhost:8080/search?q={query}')
+        data = response.json()[0]
+        print(data)
+        self.messages[-1]['content'] += f"\n context from {data['link']}: {data['content']}"
+
+
         
 
 if __name__ == "__main__":
