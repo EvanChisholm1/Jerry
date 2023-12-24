@@ -73,8 +73,10 @@ function App() {
             </div>
             <MessageInput
                 handleMessage={(m) => {
+                    if (isGenerating) return false;
                     socket.send(m);
                     setMessages([...messages, { role: "user", content: m }]);
+                    return true;
                 }}
             />
         </div>

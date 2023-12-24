@@ -20,9 +20,10 @@ if args.rag:
     print(args.rag)
 
 use_rag = args.rag
+print (args.rag)
 
 async def handler(socket, path):
-    conv = Conversation(llm, args.rag, args.coder)
+    conv = Conversation(llm, args.rag, args.coder, args.coder)
 
     async for message in socket:
         print('incoming message:', message)

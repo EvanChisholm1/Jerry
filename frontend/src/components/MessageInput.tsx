@@ -10,9 +10,8 @@ const MessageInput: FC<Props> = ({ handleMessage }) => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        console.log(inputMessage);
-        handleMessage(inputMessage);
-        setInputMessage("");
+        const reset = handleMessage(inputMessage);
+        if (reset) setInputMessage("");
     };
 
     return (

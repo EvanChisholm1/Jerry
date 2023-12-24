@@ -50,13 +50,13 @@ class Conversation:
     def __init__(self, llm, rag=False, chatml=False, coder=False, no_sys=False):
         self.llm = llm
 
-        self.messages = []
-        self.no_sys = no_sys
-        self.sys_prompt = self.get_sys_prompt(rag=rag, coder=coder)
-
         self.rag = rag
         self.coder = coder
         self.chatml = True if chatml or coder else False
+
+        self.messages = []
+        self.no_sys = no_sys
+        self.sys_prompt = self.get_sys_prompt(rag=rag, coder=coder)
 
         self.code_block_available = False
         self.code_block = ""
