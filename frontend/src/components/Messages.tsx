@@ -26,7 +26,10 @@ const Messages: FC<Props> = ({ messages }) => {
                         .split("```")
                         .map((chunk, chunkI) =>
                             chunkI % 2 == 1 ? (
-                                <pre key={`chunk: ${chunkI}`}>
+                                <pre
+                                    className="bg-gray-950 p-3 rounded text-white"
+                                    key={`chunk: ${chunkI}`}
+                                >
                                     {chunk.trim()}
                                 </pre>
                             ) : (
