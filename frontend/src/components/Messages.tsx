@@ -27,7 +27,7 @@ const Messages: FC<Props> = ({ messages }) => {
                         .map((chunk, chunkI) =>
                             chunkI % 2 == 1 ? (
                                 <pre
-                                    className="bg-gray-950 p-3 rounded text-white"
+                                    className="bg-gray-950 p-3 rounded text-white overflow-x-scroll"
                                     key={`chunk: ${chunkI}`}
                                 >
                                     {chunk.trim()}

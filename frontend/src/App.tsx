@@ -3,12 +3,14 @@ import MessageInput from "./components/MessageInput";
 import Messages from "./components/Messages";
 import Message from "./types/Message";
 import "./App.css";
+import RunCodePrompt from "./components/RunCodePrompt";
 
 const socket = new WebSocket("ws://localhost:4000");
 
 function App() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isCodeAvailable, setCodeAvailable] = useState(false);
     const [incomingMessage, setIncomingMessage] = useState("");
 
     useEffect(() => {
@@ -29,6 +31,15 @@ function App() {
     }, [isGenerating, incomingMessage, messages]);
 
     useEffect(() => {
+        const pageHeight = document.body.scrollHeight;
+        window.scroll({
+            behavior: "smooth",
+            left: 0,
+            top: pageHeight,
+        });
+    }, [incomingMessage, isCodeAvailable]);
+
+    useEffect(() => {
         function handleIncomingMessage(e: MessageEvent) {
             console.log(e);
             const m = e.data;
@@ -40,13 +51,12 @@ function App() {
                 setIsGenerating(false);
             } else {
                 console.log(e.data);
-                setIncomingMessage(`${incomingMessage}${m}`);
-                const pageHeight = document.body.scrollHeight;
-                window.scroll({
-                    behavior: "smooth",
-                    left: 0,
-                    top: pageHeight,
-                });
+
+                if (m === "\nRun the above python? y/n") {
+                    setCodeAvailable(true);
+                } else {
+                    setIncomingMessage(`${incomingMessage}${m}`);
+                }
             }
         }
         socket.addEventListener("message", handleIncomingMessage);
@@ -55,6 +65,16 @@ function App() {
             socket.removeEventListener("message", handleIncomingMessage);
         };
     }, [messages, incomingMessage, isGenerating]);
+
+    const handleAccept = () => {
+        socket.send("y");
+        setCodeAvailable(false);
+    };
+
+    const handleReject = () => {
+        socket.send("n");
+        setCodeAvailable(false);
+    };
 
     return (
         <div>
@@ -76,10 +96,18 @@ function App() {
                             : messages
                     }
                 />
+
+                {isCodeAvailable && (
+                    <RunCodePrompt
+                        onAccept={handleAccept}
+                        onReject={handleReject}
+                    />
+                )}
             </div>
             <MessageInput
                 handleMessage={(m) => {
-                    if (isGenerating) return false;
+                    if (isGenerating || isCodeAvailable || m === "")
+                        return false;
                     socket.send(m);
                     setMessages([...messages, { role: "user", content: m }]);
                     return true;
