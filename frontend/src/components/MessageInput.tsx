@@ -2,7 +2,7 @@ import { FormEvent, useState } from "react";
 import { FC } from "react";
 
 interface Props {
-    handleMessage: (message: string) => any;
+    handleMessage: (message: string) => boolean;
 }
 
 const MessageInput: FC<Props> = ({ handleMessage }) => {

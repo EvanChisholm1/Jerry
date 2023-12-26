@@ -41,6 +41,12 @@ function App() {
             } else {
                 console.log(e.data);
                 setIncomingMessage(`${incomingMessage}${m}`);
+                const pageHeight = document.body.scrollHeight;
+                window.scroll({
+                    behavior: "smooth",
+                    left: 0,
+                    top: pageHeight,
+                });
             }
         }
         socket.addEventListener("message", handleIncomingMessage);

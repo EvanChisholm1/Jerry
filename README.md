@@ -19,5 +19,6 @@ You can use jerry as a simple chatbot like base ChatGPT, connect him to my perso
     -   [x] add added tokens i.e. <|im_start|> and <|im_end|>
     -   [ ] syntax highlighting?
     -   [x] store conversation as a list of
+    -   [ ] actually decent socket protocol instead of just sending tokens directly over the socket
 -   [ ] FUNCTION CALLING - general assistant tasks
 -   [ ] Voice chat, similar to ChatGPT voice? obv whisper for speech to text, need to find good tts model

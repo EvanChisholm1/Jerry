@@ -11,7 +11,7 @@ const Messages: FC<Props> = ({ messages }) => {
         <ul className="px-5">
             {messages.map((m, i) => (
                 <li
-                    className={`p-5 flex flex-col gap-3 ${
+                    className={`p-5 flex flex-col gap-3 rounded ${
                         m.role === "user"
                             ? ""
                             : "bg-slate-100 dark:bg-slate-800"
