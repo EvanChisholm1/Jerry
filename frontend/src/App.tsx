@@ -85,24 +85,29 @@ function App() {
                 </p>
             </div>
             <hr />
-            <div className="mb-24">
-                <Messages
-                    messages={
-                        isGenerating
-                            ? [
-                                  ...messages,
-                                  { role: "jerry", content: incomingMessage },
-                              ]
-                            : messages
-                    }
-                />
-
-                {isCodeAvailable && (
-                    <RunCodePrompt
-                        onAccept={handleAccept}
-                        onReject={handleReject}
+            <div className="flex justify-center">
+                <div className="mb-24 w-full max-w-5xl">
+                    <Messages
+                        messages={
+                            isGenerating
+                                ? [
+                                      ...messages,
+                                      {
+                                          role: "jerry",
+                                          content: incomingMessage,
+                                      },
+                                  ]
+                                : messages
+                        }
                     />
-                )}
+
+                    {isCodeAvailable && (
+                        <RunCodePrompt
+                            onAccept={handleAccept}
+                            onReject={handleReject}
+                        />
+                    )}
+                </div>
             </div>
             <MessageInput
                 handleMessage={(m) => {
