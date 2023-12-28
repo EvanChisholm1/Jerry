@@ -5,6 +5,7 @@ import requests
 import os
 from dotenv import load_dotenv
 import requests
+import random
 load_dotenv()
 
 # join function used so I don't have to do multiline strings that aren't properly indented

@@ -13,7 +13,7 @@ You can use jerry as a simple chatbot like base ChatGPT, connect him to my perso
 -   [x] css in web ui
 -   [x] darkmode
 -   [x] tool use ie. calculator, search engine
--   [x] memory through vector db
+-   [ ] memory through vector db
 -   [ ] rewrite
     -   [x] clean up diff prompts
     -   [x] add added tokens i.e. <|im_start|> and <|im_end|>
@@ -22,3 +22,5 @@ You can use jerry as a simple chatbot like base ChatGPT, connect him to my perso
     -   [ ] actually decent socket protocol instead of just sending tokens directly over the socket
 -   [ ] FUNCTION CALLING - general assistant tasks
 -   [ ] Voice chat, similar to ChatGPT voice? obv whisper for speech to text, need to find good tts model
+-   [ ] swap message input for a textbox and not an html input, better for longer messages/prompts
+-   [ ] custom system prompts in web ui

@@ -109,15 +109,22 @@ function App() {
                     )}
                 </div>
             </div>
-            <MessageInput
-                handleMessage={(m) => {
-                    if (isGenerating || isCodeAvailable || m === "")
-                        return false;
-                    socket.send(m);
-                    setMessages([...messages, { role: "user", content: m }]);
-                    return true;
-                }}
-            />
+            <div className="fixed bottom-0 w-full flex justify-center">
+                <div className="w-full max-w-5xl">
+                    <MessageInput
+                        handleMessage={(m) => {
+                            if (isGenerating || isCodeAvailable || m === "")
+                                return false;
+                            socket.send(m);
+                            setMessages([
+                                ...messages,
+                                { role: "user", content: m },
+                            ]);
+                            return true;
+                        }}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

@@ -15,10 +15,7 @@ const MessageInput: FC<Props> = ({ handleMessage }) => {
     };
 
     return (
-        <form
-            className="fixed bottom-0 flex w-full gap-5 p-5"
-            onSubmit={handleSubmit}
-        >
+        <form className="flex w-full gap-5 p-5" onSubmit={handleSubmit}>
             <input
                 className="grow ring-none outline-none border-none rounded ring-2 ring-gray-200 focus:ring-2 focus:ring-blue-500 p-5 dark:bg-slate-800 dark:ring-gray-600"
                 type="text"
