@@ -7,6 +7,12 @@ import RunCodePrompt from "./components/RunCodePrompt";
 
 const socket = new WebSocket("ws://localhost:4000");
 
+interface ServerMessage {
+    type: "incoming_token" | "start_message" | "end_message" | "code_available";
+    token?: string;
+}
+
+// this component is getting a little wild I need to extract some of the socket handling to a ctx or smth
 function App() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -41,24 +47,21 @@ function App() {
 
     useEffect(() => {
         function handleIncomingMessage(e: MessageEvent) {
-            console.log(e);
-            const m = e.data;
-            if (m === "generating...") {
+            const message: ServerMessage = JSON.parse(e.data);
+
+            if (message.type === "start_message") {
                 setIsGenerating(true);
                 setIncomingMessage("");
-            } else if (m === "END OF SEQUENCE") {
+            } else if (message.type === "end_message") {
                 console.log(incomingMessage);
                 setIsGenerating(false);
+            } else if (message.type === "code_available") {
+                setCodeAvailable(true);
             } else {
-                console.log(e.data);
-
-                if (m === "\nRun the above python? y/n") {
-                    setCodeAvailable(true);
-                } else {
-                    setIncomingMessage(`${incomingMessage}${m}`);
-                }
+                setIncomingMessage(`${incomingMessage}${message.token}`);
             }
         }
+
         socket.addEventListener("message", handleIncomingMessage);
 
         return () => {

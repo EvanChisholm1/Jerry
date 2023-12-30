@@ -3,6 +3,7 @@ import argparse
 import websockets
 from llama_cpp import Llama
 from conversation import Conversation
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--ngl', default=0, type=int)
@@ -22,12 +23,29 @@ if args.rag:
 use_rag = args.rag
 print (args.rag)
 
+# TYPES OF POSSIBLE MESSAGES, SERVER -> CLIENT:
+# Regular tokens
+#   type: 'incoming_token', token: str
+# start of message:
+#   type: "start_message"
+# end of message:
+#   type: "end_message"
+# code available:
+#   type: "code_available"
+
+
+def token_to_json(message):
+    return json.dumps({
+        'type': 'incoming_token',
+        'token': message
+    })
+
 async def handler(socket, path):
     conv = Conversation(llm, args.rag, args.coder, args.coder)
 
     async for message in socket:
         print('incoming message:', message)
-        await socket.send('generating...')
+        await socket.send(json.dumps({'type': 'start_message'}))
 
         add_assistant_prefix = True
 
@@ -36,22 +54,22 @@ async def handler(socket, path):
             add_assistant_prefix = False
             if message == 'y':
                 result = conv.accept_code_block()
-                await socket.send(f'```output\n{result}\n```')
+                await socket.send(token_to_json(f'```output\n{result}\n```'))
             else:
                 conv.reject_code_block()
                 print("code not run")
-                await socket.send(f"\noutput: code not run")
+                await socket.send(token_to_json(f"\noutput: code not run"))
         else:
             conv.add_user_message(message)
 
 
         for token in conv.generate_chat_completion(add_assistant_prefix=add_assistant_prefix):
-            await socket.send(token)
+            await socket.send(token_to_json(token))
         
         if conv.code_block_available:
-            await socket.send("\nRun the above python? y/n")
+            await socket.send(json.dumps({'type': 'code_available', token: 'Run the above python? y/n'}))
 
-        await socket.send('END OF SEQUENCE')
+        await socket.send(json.dumps({'type': 'end_message'}))
     
 start_server = websockets.serve(handler, "localhost", 4000) 
 
