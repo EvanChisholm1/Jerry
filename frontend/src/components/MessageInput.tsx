@@ -22,6 +22,7 @@ const MessageInput: FC<Props> = ({ handleMessage }) => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Your Message"
+                autoFocus
             />
             <button
                 className="bg-blue-500 text-white rounded-md p-2 px-6 font-semibold"

@@ -14,7 +14,7 @@ def join(segments):
 
 def run_code(code_block):
     usr_stdout = StringIO()
-    with redirect_stdout(usr_stdout): exec(code_block)
+    with redirect_stdout(usr_stdout): exec(code_block, globals(), locals())
     
     return usr_stdout.getvalue()
 
