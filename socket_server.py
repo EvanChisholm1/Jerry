@@ -33,6 +33,14 @@ print (args.rag)
 # code available:
 #   type: "code_available"
 
+# TYPES OF POSSIBLE MESSAGES, CLIENT -> SERVER
+# Regular Message
+#   type: type: 'message', content: str
+# Accept Code Block
+#   type: 'accept_code_block'
+# Reject Code Block
+#   type: 'reject_code_block'
+
 
 def token_to_json(message):
     return json.dumps({
@@ -45,6 +53,8 @@ async def handler(socket, path):
 
     async for message in socket:
         print('incoming message:', message)
+
+        decoded_message = json.loads(message)
         await socket.send(json.dumps({'type': 'start_message'}))
 
         add_assistant_prefix = True
@@ -52,16 +62,17 @@ async def handler(socket, path):
         # still not 100% happy with this but is infinitely better than what it was
         if conv.code_block_available and conv.coder:
             add_assistant_prefix = False
-            if message == 'y':
+            if decoded_message['type'] == 'accept_code_block':
                 result = conv.accept_code_block()
                 await socket.send(token_to_json(f'```output\n{result}\n```'))
             else:
                 conv.reject_code_block()
                 print("code not run")
                 await socket.send(token_to_json(f"\noutput: code not run"))
-        else:
-            conv.add_user_message(message)
-
+        
+        
+        if decoded_message['type'] == "message":
+            conv.add_user_message(decoded_message['content'])
 
         for token in conv.generate_chat_completion(add_assistant_prefix=add_assistant_prefix):
             await socket.send(token_to_json(token))

@@ -12,6 +12,11 @@ interface ServerMessage {
     token?: string;
 }
 
+interface ClientMessage {
+    type: "message" | "accept_code_block" | "reject_code_block";
+    content?: string;
+}
+
 // this component is getting a little wild I need to extract some of the socket handling to a ctx or smth
 function App() {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -70,12 +75,14 @@ function App() {
     }, [messages, incomingMessage, isGenerating]);
 
     const handleAccept = () => {
-        socket.send("y");
+        const m: ClientMessage = { type: "accept_code_block" };
+        socket.send(JSON.stringify(m));
         setCodeAvailable(false);
     };
 
     const handleReject = () => {
-        socket.send("n");
+        const m: ClientMessage = { type: "reject_code_block" };
+        socket.send(JSON.stringify(m));
         setCodeAvailable(false);
     };
 
@@ -118,11 +125,18 @@ function App() {
                         handleMessage={(m) => {
                             if (isGenerating || isCodeAvailable || m === "")
                                 return false;
-                            socket.send(m);
+
+                            const clientMessage: ClientMessage = {
+                                type: "message",
+                                content: m,
+                            };
+                            socket.send(JSON.stringify(clientMessage));
+
                             setMessages([
                                 ...messages,
                                 { role: "user", content: m },
                             ]);
+
                             return true;
                         }}
                     />
