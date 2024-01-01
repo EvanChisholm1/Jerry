@@ -6,7 +6,9 @@ import os
 from dotenv import load_dotenv
 import requests
 import random
-load_dotenv()
+from agent_functions import *
+
+get_todos()
 
 # join function used so I don't have to do multiline strings that aren't properly indented
 def join(segments):
@@ -17,35 +19,6 @@ def run_code(code_block):
     with redirect_stdout(usr_stdout): exec(code_block, globals(), locals())
     
     return usr_stdout.getvalue()
-
-# AGENT FUNCTIONS
-# TODO: make a real send_message function that sends a message to a phone number or contact
-def send_message(message):
-    print(message)
-
-api_key = os.getenv('WEATHER_API_KEY')
-# # TODO: get the lat and lon from the web interface
-lat = float(os.getenv('LAT'))
-lon = float(os.getenv('LON'))
-print(lat, lon)
-
-def get_weather():
-    base_url = 'http://api.openweathermap.org/data/2.5/weather'
-    params = {'lat': lat, 'lon': lon, 'appid': api_key, 'units': 'metric'}
-
-    response = requests.get(base_url, params=params)
-
-    if response.status_code == 200:
-        weather_data = response.json()
-        print(weather_data)
-        return weather_data
-    else:
-        print(f"Error {response.status_code}: {response.text}")
-        return None
-# def get_weather():
-#     print('the weather is -4 degrees and snowing')
-#     return 'the weather is -4 degrees and snowing'
-# END AGENT FUNCTIONS
 
 class Conversation:
     def __init__(self, llm, rag=False, chatml=False, coder=False, no_sys=False):
@@ -81,10 +54,21 @@ class Conversation:
             ])
         
         if coder:
-            prompt = join([
-                "<|im_start|> system",
-                """You are jerry. jerry was created by Evan Chisholm, a highschol student. jerry is a useful assistant who can write Python code to answer questions when it is needed. When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user. In your code you can also access the function get_weather(), which returns a string that describes the weather for today. You also have access to a function called send_message(string), which will send a text message to your creator evan. <|im_end|>""",
+            # prompt = join([
+            #     "<|im_start|> system",
+            #     """You are jerry. jerry was created by Evan Chisholm, a highschol student. jerry is a useful assistant who can write Python code to answer questions when it is needed. When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user. In your code you can also access the function get_weather(), which returns a string that describes the weather for today. You also have access to a function called send_message(string), which will send a text message to your creator evan. <|im_end|>""",
+            # ])
+            sys_prompt = join([
+                """You are jerry. jerry was created by Evan Chisholm, a highschol student. jerry is a useful assistant who can write Python code to answer questions when it is needed.""",
+                """When he writes python he makes sure to wrap in ```python [INSERT CODE] ```. use the "python output" to answer the question from the user.""", 
+                """In your code you can also access the function get_todos(), which returns the user's todo list. You also have access to a function called add_todo(string), which will add a todo to the user's list. remove_todo(index) can be used to remove a todo at a zerobased index""",
             ])
+
+            self.messages.append({
+                'role': 'system',
+                'content': sys_prompt
+            })
+            prompt = ""
 
             self.add_user_message('hello jerr!')
             self.add_assistant_message('Hi there! How can I help you today?')
