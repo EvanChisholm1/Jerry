@@ -3,9 +3,10 @@ import { FC } from "react";
 
 interface Props {
     handleMessage: (message: string) => boolean;
+    isGenerating: boolean;
 }
 
-const MessageInput: FC<Props> = ({ handleMessage }) => {
+const MessageInput: FC<Props> = ({ handleMessage, isGenerating }) => {
     const [inputMessage, setInputMessage] = useState("");
 
     const handleSubmit = (e: FormEvent) => {
@@ -25,10 +26,16 @@ const MessageInput: FC<Props> = ({ handleMessage }) => {
                 autoFocus
             />
             <button
-                className="bg-blue-500 text-white rounded-md p-2 px-6 font-semibold"
+                className={`bg-blue-500 text-white rounded-md p-2 px-6 font-semibold ${
+                    isGenerating ? "cursor-not-allowed" : ""
+                }`}
                 type="submit"
             >
-                send
+                {isGenerating ? (
+                    <div className="w-7 h-7 animate-spin bg-transparent border-4 rounded-full border-t-transparent"></div>
+                ) : (
+                    "send"
+                )}
             </button>
         </form>
     );

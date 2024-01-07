@@ -4,6 +4,7 @@ import Messages from "./components/Messages";
 import Message from "./types/Message";
 import "./App.css";
 import RunCodePrompt from "./components/RunCodePrompt";
+import Header from "./components/Header";
 
 const socket = new WebSocket("ws://localhost:4000");
 
@@ -88,22 +89,9 @@ function App() {
 
     return (
         <div>
-            <div className="flex justify-between">
-                <div className="m-5 ml-10">
-                    <h1 className="text-3xl font-bold">jerry</h1>
-                    <p>
-                        <small>An AI by Evan Chisholm</small>
-                    </p>
-                </div>
-
-                {isGenerating && (
-                    <div className="flex mr-12 text-center justify-center items-center gap-4">
-                        <div className="rounded-full bg-red-500 w-5 h-5"></div>
-                        <p>generating...</p>
-                    </div>
-                )}
-            </div>
+            <Header isGenerating={isGenerating} />
             <hr />
+
             <div className="flex justify-center">
                 <div className="mb-24 w-full max-w-5xl">
                     <Messages
@@ -128,9 +116,11 @@ function App() {
                     )}
                 </div>
             </div>
+
             <div className="fixed bottom-0 w-full flex justify-center">
                 <div className="w-full max-w-5xl">
                     <MessageInput
+                        isGenerating={isGenerating}
                         handleMessage={(m) => {
                             if (isGenerating || isCodeAvailable || m === "")
                                 return false;
