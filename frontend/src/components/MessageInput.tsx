@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState, useRef, useCallback } from "react";
 import { FC } from "react";
 
 interface Props {
@@ -8,12 +8,42 @@ interface Props {
 
 const MessageInput: FC<Props> = ({ handleMessage, isGenerating }) => {
     const [inputMessage, setInputMessage] = useState("");
+    const isShift = useRef(false);
+
+    const submit = useCallback(() => {
+        const reset = handleMessage(inputMessage);
+        if (reset) setInputMessage("");
+    }, [inputMessage, handleMessage]);
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        const reset = handleMessage(inputMessage);
-        if (reset) setInputMessage("");
+        submit();
     };
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Enter" && !isShift.current) {
+                e.preventDefault();
+                if (!isGenerating) submit();
+            } else if (e.key === "Shift") {
+                isShift.current = true;
+            }
+        };
+
+        const handleKeyUp = (e: KeyboardEvent) => {
+            if (e.key === "Shift") {
+                isShift.current = false;
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+        };
+    }, [inputMessage, submit, isGenerating]);
 
     return (
         <form className="flex w-full gap-5 p-5" onSubmit={handleSubmit}>
