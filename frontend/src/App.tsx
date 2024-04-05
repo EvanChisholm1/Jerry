@@ -92,53 +92,55 @@ function App() {
             <Header isGenerating={isGenerating} />
             <hr />
 
-            <div className="flex justify-center">
-                <div className="mb-24 w-full max-w-5xl">
-                    <Messages
-                        messages={
-                            isGenerating
-                                ? [
-                                      ...messages,
-                                      {
-                                          role: "jerry",
-                                          content: incomingMessage,
-                                      },
-                                  ]
-                                : messages
-                        }
-                    />
-
-                    {isCodeAvailable && (
-                        <RunCodePrompt
-                            onAccept={handleAccept}
-                            onReject={handleReject}
+            <div className="w-full flex flex-col justify-center">
+                <div className="w-full flex justify-center flex-grow">
+                    <div className="w-full max-w-5xl">
+                        <Messages
+                            messages={
+                                isGenerating
+                                    ? [
+                                          ...messages,
+                                          {
+                                              role: "jerry",
+                                              content: incomingMessage,
+                                          },
+                                      ]
+                                    : messages
+                            }
                         />
-                    )}
+
+                        {isCodeAvailable && (
+                            <RunCodePrompt
+                                onAccept={handleAccept}
+                                onReject={handleReject}
+                            />
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            <div className="fixed bottom-0 w-full flex justify-center">
-                <div className="w-full max-w-5xl">
-                    <MessageInput
-                        isGenerating={isGenerating}
-                        handleMessage={(m) => {
-                            if (isGenerating || isCodeAvailable || m === "")
-                                return false;
+                <div className="sticky bottom-0 w-full flex justify-center">
+                    <div className="w-full max-w-5xl">
+                        <MessageInput
+                            isGenerating={isGenerating}
+                            handleMessage={(m) => {
+                                if (isGenerating || isCodeAvailable || m === "")
+                                    return false;
 
-                            const clientMessage: ClientMessage = {
-                                type: "message",
-                                content: m,
-                            };
-                            socket.send(JSON.stringify(clientMessage));
+                                const clientMessage: ClientMessage = {
+                                    type: "message",
+                                    content: m,
+                                };
+                                socket.send(JSON.stringify(clientMessage));
 
-                            setMessages([
-                                ...messages,
-                                { role: "user", content: m },
-                            ]);
+                                setMessages([
+                                    ...messages,
+                                    { role: "user", content: m },
+                                ]);
 
-                            return true;
-                        }}
-                    />
+                                return true;
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

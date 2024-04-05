@@ -1,4 +1,11 @@
-import { FormEvent, useEffect, useState, useRef, useCallback } from "react";
+import {
+    FormEvent,
+    useEffect,
+    useState,
+    useRef,
+    useCallback,
+    ChangeEvent,
+} from "react";
 import { FC } from "react";
 
 interface Props {
@@ -8,12 +15,19 @@ interface Props {
 
 const MessageInput: FC<Props> = ({ handleMessage, isGenerating }) => {
     const [inputMessage, setInputMessage] = useState("");
+    const [height, setScrollHeight] = useState<string | number>("auto");
+    const textareaRef = useRef(null);
     const isShift = useRef(false);
 
     const submit = useCallback(() => {
         const reset = handleMessage(inputMessage);
         if (reset) setInputMessage("");
     }, [inputMessage, handleMessage]);
+
+    const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        setInputMessage(e.target.value);
+        setScrollHeight(e.target.scrollHeight);
+    };
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
@@ -50,9 +64,12 @@ const MessageInput: FC<Props> = ({ handleMessage, isGenerating }) => {
             <textarea
                 className="grow ring-none outline-none border-none rounded ring-2 ring-gray-200 focus:ring-2 focus:ring-blue-500 p-5 dark:bg-slate-800 dark:ring-gray-600"
                 value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
+                // onChange={(e) => setInputMessage(e.target.value)}
+                onChange={handleChange}
                 placeholder="Your Message"
                 autoFocus
+                style={{ height: `${height}px` }}
+                ref={textareaRef}
             />
             <button
                 className={`bg-blue-500 text-white rounded-md p-2 px-6 font-semibold ${
