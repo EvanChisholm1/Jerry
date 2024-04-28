@@ -141,10 +141,11 @@ class Conversation:
         response = ""
         for token in self.llm.generate(tokenized_prompt):
             out_token = self.llm.detokenize([token]).decode('utf-8')
+            print(f"'{out_token}'")
 
-            if is_in_python_block and response.endswith('```') and self.coder:
+            if is_in_python_block and response.strip().endswith('```') and self.coder:
                 is_in_python_block = False
-                self.code_block = python_block[:-3]
+                self.code_block = python_block.strip()[:-3]
                 self.code_block_available = True
                 break
 
@@ -158,7 +159,7 @@ class Conversation:
             yield out_token
 
 
-            if response.endswith("```python"):
+            if response.strip().endswith("```python"):
                 python_block = ""
                 is_in_python_block = True
             

@@ -14,7 +14,7 @@ parser.add_argument('--path')
 args = parser.parse_args()
 print(args.path)
 
-llm = Llama(model_path=args.path, n_ctx=2048, n_gpu_layers=args.ngl)
+llm = Llama(model_path=args.path, n_ctx=4096, n_gpu_layers=args.ngl)
 
 if args.rag:
     print('using rag')
